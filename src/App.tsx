@@ -4,7 +4,9 @@ function App() {
   return (
     <div className="container lg m-auto">
         <Header />
-        index page
+        <div className="flex items-center justify-center text-5xl p-10">
+            Главная страница
+        </div>
     </div>
   )
 }
