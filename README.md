@@ -14,6 +14,11 @@
 - Асинхронные операции, последовательные и параллельные
 - Взаимодействие с WebAPIs
 
+## API
+
+Для имитации бэка использую сервис
+https://jsonplaceholder.typicode.com/
+
 ## Источники
 
 - Код контейнеров взят из книги https://github.com/MostlyAdequate/mostly-adequate-guide-ru
