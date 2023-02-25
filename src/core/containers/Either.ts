@@ -4,6 +4,8 @@ import {inspect, getType} from "../helpers";
  * Эти классы нужня для программирования
  * условий как я понял Right - это правильная ветка
  * left альтернативная, но это не точно
+ *
+ * So Either, for example, is defined and explained in Ch8
  */
 export class Either {
     $value: any;
