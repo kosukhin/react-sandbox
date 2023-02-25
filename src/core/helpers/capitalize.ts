@@ -1,0 +1,1 @@
+export const capitalize = (s: any) => `${s[0].toUpperCase()}${s.substring(1)}`;
