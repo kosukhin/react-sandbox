@@ -1,16 +1,25 @@
 import * as R from 'ramda'
+import {IO} from "../core/containers";
+import {user} from "../state";
 
 const {log} = console
 
+const perform = (io: any) => io.unsafePerformIO ? io.unsafePerformIO() : null
+// myLogger - это чистая функция, нечистая - анонимная функция
+const myLogger = (x: any) => new IO(() => console.log(x))
+// Покажет имя юзера в консоль
+const showName = R.compose(perform, myLogger, R.prop('name'))
+const composeTest = R.compose(() => log('two'), () => log('one'))
+
+user.name = 'Eugene';
+
 function Tests() {
-    log('tests');
     const toUpper = R.map(R.toUpper)
-    const res = toUpper(['hello', 'world'])
-    log(res)
+    const onShowName = () => showName(user)
 
     return (
         <div>
-            tests
+            <button onClick={onShowName}>show name</button>
         </div>
     )
 }
