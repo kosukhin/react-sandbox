@@ -7,6 +7,8 @@ import {myLogger} from "../useCase/helpers/myLogger";
 // Покажет имя юзера в консоль
 const showName = R.compose(myLogger, R.prop('name'))
 
+showUsersTable();
+
 function Tests() {
     const [user, setUser] = useState({
         name: 'Ivan',
@@ -15,8 +17,6 @@ function Tests() {
     const changeName = (event: ChangeEvent<HTMLInputElement>) =>  {
         setUser({name: event.target.value})
     }
-
-    showUsersTable();
 
     return (
         <div>
