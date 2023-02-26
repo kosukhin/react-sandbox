@@ -45,7 +45,6 @@ export class Task {
     }
 
     map(fn: any) {
-        console.log('map inside task')
         return new Task((reject: any, resolve: any) => this.fork(reject, R.compose(resolve, fn)));
     }
 }
