@@ -52,9 +52,7 @@ function Tests() {
         setUser({name: event.target.value})
     }
 
-    const onClick = async () => {
-        updateUsers(setUsers, setLoading)()
-    }
+    const onClick = updateUsers(setUsers, setLoading)
 
     return (
         <div>
