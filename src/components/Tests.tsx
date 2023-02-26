@@ -1,11 +1,14 @@
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
-import {getUsers, showUsersTable} from "../useCase/showUsersTable";
+import {getPureUsers, getUsers, showUsersTable} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
-import {compose, prop} from "ramda";
+import {compose, curry, prop} from "ramda";
 import {performIO} from "../useCase/helpers/performIO";
 import {Button} from "./ui/Button";
 import {ButtonGroup} from "./ui/ButtonGroup";
+import {IO} from "../core/containers";
+import {map} from "../core/helpers";
+import {performIOTask} from "../useCase/helpers/performIOTask";
 
 // Покажет имя юзера в консоль
 const showName = compose(performIO, myLogger, prop('name'))
@@ -17,8 +20,29 @@ interface User {
     name: string
 }
 
+const ioSetter = curry((setter, value) => new IO(() => {
+    setter(value)
+}))
+
+const updateUsers = (setUsers, setLoading) => compose(
+    performIOTask,
+    map(ioSetter(setUsers)),
+    map((x) => {
+        console.log('set load', false)
+        setLoading(false)
+        return x
+    }),
+    getPureUsers,
+    (x?) => {
+        console.log('setload', true)
+        setLoading(true)
+        setUsers([])
+        return x
+    },
+)
 
 function Tests() {
+    const [loading, setLoading] = useState(false)
     const [users, setUsers] = useState<User[]>([])
     const [user, setUser] = useState({
         name: 'Ivan',
@@ -29,8 +53,7 @@ function Tests() {
     }
 
     const onClick = async () => {
-        const res = await getUsers()
-        setUsers(res)
+        updateUsers(setUsers, setLoading)()
     }
 
     return (
@@ -48,6 +71,7 @@ function Tests() {
                     Получить юзеров
                 </Button>
             </ButtonGroup>
+            {loading ? (<div>Идет загрузка...</div>) : null}
             {users.length ? (
                 <ul>
                     { users.map(user => (<li key={user.id}>{user.name}</li>))}

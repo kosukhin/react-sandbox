@@ -23,3 +23,5 @@ export const getUsers = () => compose(
     waitTask,
     getJSON
 )(usersUrl)
+
+export const getPureUsers = () => getJSON(usersUrl)
