@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
-import {showUsersTable} from "../useCase/showUsersTable";
+import {getUsers, showUsersTable} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
 
 // Покажет имя юзера в консоль
@@ -18,6 +18,11 @@ function Tests() {
         setUser({name: event.target.value})
     }
 
+    const onClick = async () => {
+        const res = await getUsers()
+        console.log(res)
+    }
+
     return (
         <div>
             <input
@@ -26,6 +31,7 @@ function Tests() {
                 onChange={changeName}
             />
             <button onClick={onShowName}>show name</button>
+            <button onClick={onClick}>get users</button>
         </div>
     )
 }
