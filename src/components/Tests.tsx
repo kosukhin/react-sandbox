@@ -1,26 +1,36 @@
-import * as R from 'ramda'
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
 import {getUsers, showUsersTable} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
+import {compose, prop} from "ramda";
+import {performIO} from "../useCase/helpers/performIO";
+import {Button} from "./ui/Button";
+import {ButtonGroup} from "./ui/ButtonGroup";
 
 // Покажет имя юзера в консоль
-const showName = R.compose(myLogger, R.prop('name'))
+const showName = compose(performIO, myLogger, prop('name'))
 
 showUsersTable();
 
+interface User {
+    id: number,
+    name: string
+}
+
+
 function Tests() {
+    const [users, setUsers] = useState<User[]>([])
     const [user, setUser] = useState({
         name: 'Ivan',
     });
-    const onShowName = () => showName(user).unsafePerformIO()
+    const onShowName = () => showName(user)
     const changeName = (event: ChangeEvent<HTMLInputElement>) =>  {
         setUser({name: event.target.value})
     }
 
     const onClick = async () => {
         const res = await getUsers()
-        console.log(res)
+        setUsers(res)
     }
 
     return (
@@ -30,8 +40,21 @@ function Tests() {
                 value={user.name}
                 onChange={changeName}
             />
-            <button onClick={onShowName}>show name</button>
-            <button onClick={onClick}>get users</button>
+            <ButtonGroup>
+                <Button onClick={onShowName}>
+                    Показать имя
+                </Button>
+                <Button onClick={onClick}>
+                    Получить юзеров
+                </Button>
+            </ButtonGroup>
+            {users.length ? (
+                <ul>
+                    { users.map(user => (<li key={user.id}>{user.name}</li>))}
+                </ul>
+            ) : (
+                <div>Нет юзеров</div>
+            )}
         </div>
     )
 }
