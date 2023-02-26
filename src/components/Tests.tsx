@@ -1,15 +1,11 @@
 import * as R from 'ramda'
-import {IO} from "../core/containers";
 import {ChangeEvent, useState} from "react";
+import "../useCase/fromBook";
+import {showUsersTable} from "../useCase/showUsersTable";
+import {myLogger} from "../useCase/helpers/myLogger";
 
-const {log} = console
-
-const performIO = (io: any) => io.unsafePerformIO ? io.unsafePerformIO() : null
-// myLogger - это чистая функция, нечистая - анонимная функция
-const myLogger = (x: any) => new IO(() => console.log(x))
 // Покажет имя юзера в консоль
 const showName = R.compose(myLogger, R.prop('name'))
-const composeTest = R.compose(() => log('two'), () => log('one'))
 
 function Tests() {
     const [user, setUser] = useState({
@@ -19,6 +15,8 @@ function Tests() {
     const changeName = (event: ChangeEvent<HTMLInputElement>) =>  {
         setUser({name: event.target.value})
     }
+
+    showUsersTable();
 
     return (
         <div>
