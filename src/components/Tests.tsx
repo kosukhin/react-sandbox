@@ -1,14 +1,16 @@
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
-import {getPureUsers, getUsers, showUsersTable} from "../useCase/showUsersTable";
+import {getPureUsers, showUsersTable} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
-import {compose, curry, prop} from "ramda";
+import {compose, prop} from "ramda";
 import {performIO} from "../useCase/helpers/performIO";
 import {Button} from "./ui/Button";
 import {ButtonGroup} from "./ui/ButtonGroup";
-import {IO} from "../core/containers";
 import {map} from "../core/helpers";
-import {performIOTask} from "../useCase/helpers/performIOTask";
+import {effect} from "../useCase/helpers/effect";
+import {call} from "../useCase/helpers/call";
+import {apply} from "../useCase/helpers/apply";
+import {performTask} from "../useCase/helpers/performTask";
 
 // Покажет имя юзера в консоль
 const showName = compose(performIO, myLogger, prop('name'))
@@ -20,25 +22,12 @@ interface User {
     name: string
 }
 
-const ioSetter = curry((setter, value) => new IO(() => {
-    setter(value)
-}))
-
 const updateUsers = (setUsers, setLoading) => compose(
-    performIOTask,
-    map(ioSetter(setUsers)),
-    map((x) => {
-        console.log('set load', false)
-        setLoading(false)
-        return x
-    }),
+    map(effect(apply(setUsers))),
+    map(effect(call(setLoading, false))),
     getPureUsers,
-    (x?) => {
-        console.log('setload', true)
-        setLoading(true)
-        setUsers([])
-        return x
-    },
+    effect(call(setLoading, true)),
+    effect(call(setUsers, []))
 )
 
 function Tests() {
@@ -52,7 +41,7 @@ function Tests() {
         setUser({name: event.target.value})
     }
 
-    const onClick = updateUsers(setUsers, setLoading)
+    const onClick = compose(performTask, updateUsers(setUsers, setLoading))
 
     return (
         <div>
