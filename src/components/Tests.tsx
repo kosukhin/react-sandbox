@@ -1,8 +1,8 @@
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
-import {getPureUsers, showUsersTable} from "../useCase/showUsersTable";
+import {getPureUsers} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
-import {compose, prop} from "ramda";
+import {compose, pipe, prop} from "ramda";
 import {performIO} from "../useCase/helpers/performIO";
 import {Button} from "./ui/Button";
 import {ButtonGroup} from "./ui/ButtonGroup";
@@ -15,19 +15,17 @@ import {performTask} from "../useCase/helpers/performTask";
 // Покажет имя юзера в консоль
 const showName = compose(performIO, myLogger, prop('name'))
 
-showUsersTable();
-
 interface User {
     id: number,
     name: string
 }
 
-const updateUsers = (setUsers, setLoading) => compose(
+const updateUsers = (setUsers, setLoading) => pipe(
+    effect(call(setUsers, [])),
+    effect(call(setLoading, true)),
+    getPureUsers,
     map(effect(apply(setUsers))),
     map(effect(call(setLoading, false))),
-    getPureUsers,
-    effect(call(setLoading, true)),
-    effect(call(setUsers, []))
 )
 
 function Tests() {
@@ -41,7 +39,7 @@ function Tests() {
         setUser({name: event.target.value})
     }
 
-    const onClick = compose(performTask, updateUsers(setUsers, setLoading))
+    const onClick = pipe(updateUsers(setUsers, setLoading), performTask)
 
     return (
         <div>
