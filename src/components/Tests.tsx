@@ -1,6 +1,6 @@
 import {ChangeEvent, useState} from "react";
 import "../useCase/fromBook";
-import {getPureUsers} from "../useCase/showUsersTable";
+import {getPureUsers, getUsersError} from "../useCase/showUsersTable";
 import {myLogger} from "../useCase/helpers/myLogger";
 import {compose, curry, pipe, prop} from "ramda";
 import {performIO} from "../useCase/helpers/performIO";
@@ -12,6 +12,7 @@ import {call} from "../useCase/helpers/call";
 import {apply} from "../useCase/helpers/apply";
 import {performTask} from "../useCase/helpers/performTask";
 import {getTodos} from "../useCase/todos";
+import {showError} from "../core/helpers/showError";
 
 // Покажет имя юзера в консоль
 const showName = compose(performIO, myLogger, prop('name'))
@@ -32,7 +33,8 @@ const loadingProcess = curry((dataLoader, setData, setLoading) => pipe(
     effect(call(setData, [])),
     effect(call(setLoading, true)),
     dataLoader,
-    map(effect(apply(setData))),
+    map(effect(apply(showError))),
+    map(map(effect(apply(setData)))),
     map(effect(call(setLoading, false))),
 ))
 
@@ -54,6 +56,12 @@ function Tests() {
         setLoading
     ), performTask)
 
+    const onGetUsersError = pipe(loadingProcess(
+        getUsersError,
+        setUsers,
+        setLoading
+    ), performTask)
+
     const onClick2 = pipe(loadingProcess(
         getTodos,
         setTodos,
@@ -71,14 +79,16 @@ function Tests() {
                 <Button onClick={onShowName}>
                     Показать имя
                 </Button>
+            </ButtonGroup>
+            <h2>Юзеры</h2>
+            <ButtonGroup>
                 <Button onClick={onClick}>
                     Получить юзеров
                 </Button>
-                <Button onClick={onClick2}>
-                    Получить туду
+                <Button onClick={onGetUsersError}>
+                    Получить юзеров ошибка
                 </Button>
             </ButtonGroup>
-            <h2>Юзеры</h2>
             <div>
                 {loading ? (<div>Идет загрузка...</div>) : null}
                 {users.length ? (
@@ -91,6 +101,9 @@ function Tests() {
             </div>
             <hr/>
             <h2>Туду</h2>
+            <Button onClick={onClick2}>
+                Получить туду
+            </Button>
             <div>
                 {loading ? (<div>Идет загрузка...</div>) : null}
                 {todos.length ? (

@@ -25,3 +25,5 @@ export const getUsers = () => compose(
 )(usersUrl)
 
 export const getPureUsers = () => getJSON(usersUrl)
+
+export const getUsersError = () => getJSON('https://jsonplaceholder.typicode.com/users11')
