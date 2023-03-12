@@ -13,6 +13,7 @@ import {apply} from "../useCase/helpers/apply";
 import {performTask} from "../useCase/helpers/performTask";
 import {getTodos} from "../useCase/todos";
 import {showError} from "../core/helpers/showError";
+import {forLeft} from "../core/helpers/forLeft";
 
 // Покажет имя юзера в консоль
 const showName = compose(performIO, myLogger, prop('name'))
@@ -33,7 +34,7 @@ const loadingProcess = curry((dataLoader, setData, setLoading) => pipe(
     effect(call(setData, [])),
     effect(call(setLoading, true)),
     dataLoader,
-    map(effect(apply(showError))),
+    map(effect(apply(forLeft(showError)))),
     map(map(effect(apply(setData)))),
     map(effect(call(setLoading, false))),
 ))

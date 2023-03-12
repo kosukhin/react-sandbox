@@ -1,11 +1,7 @@
-import {Either, Left, Right} from "../containers";
-
 /**
  * Выводим ошибку
- * @param either
+ * @param value
  */
-export const showError = (either: Left | Right) => {
-    if (either.isLeft) {
-        alert(either.$value);
-    }
+export const showError = (value: string) => {
+    alert(`Произошла ошибка: ${value}`);
 }
