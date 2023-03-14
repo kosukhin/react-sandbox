@@ -7,7 +7,7 @@ import {performIO} from "../useCase/helpers/performIO";
 import {Button} from "./ui/Button";
 import {ButtonGroup} from "./ui/ButtonGroup";
 import {map} from "../core/helpers";
-import {effect} from "../useCase/helpers/effect";
+import {effect, effectApply, effectCall} from "../useCase/helpers/effect";
 import {call} from "../useCase/helpers/call";
 import {apply} from "../useCase/helpers/apply";
 import {performTask} from "../useCase/helpers/performTask";
@@ -31,12 +31,12 @@ interface Todo {
 }
 
 const loadingProcess = curry((dataLoader, setData, setLoading) => pipe(
-    effect(call(setData, [])),
-    effect(call(setLoading, true)),
+    effectCall(setData, []),
+    effectCall(setLoading, true),
     dataLoader,
-    map(effect(apply(forLeft(showError)))),
-    map(map(effect(apply(setData)))),
-    map(effect(call(setLoading, false))),
+    map(effectApply(forLeft(showError))),
+    map(map(effectApply(setData))),
+    map(effectCall(setLoading, false)),
 ))
 
 function Tests() {
